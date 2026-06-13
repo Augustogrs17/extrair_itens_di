@@ -1,0 +1,40 @@
+name: Build EXE (Windows)
+
+# EN: Builds a standalone Windows .exe from extrair_itens_di.py
+# using PyInstaller on a windows-latest GitHub-hosted runner, then uploads
+# it as a downloadable artifact.
+
+on:
+  workflow_dispatch:    # permite rodar manualmente pelo botao "Run workflow"
+  push:
+    paths:
+      - 'extrair_itens_di.py'
+      - '.github/workflows/build-exe.yml'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install openpyxl pyinstaller
+
+      - name: Build executable
+        run: |
+          pyinstaller --onefile --windowed --name ExtrairItensDI --version-file version_info.txt extrair_itens_di.py
+
+      - name: Upload exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ExtrairItensDI-exe
+          path: dist/ExtrairItensDI.exe
