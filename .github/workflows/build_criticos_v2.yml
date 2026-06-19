@@ -1,0 +1,32 @@
+name: Build Cockpit Críticos v2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: |
+          pip install pyinstaller openpyxl pandas
+
+      - name: Gerar executável
+        run: |
+          pyinstaller --onefile --windowed --name "Cockpit_Criticos_v2" cockpit_criticos_v2.py
+
+      - name: Upload artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cockpit_Criticos_v2_exe
+          path: dist/Cockpit_Criticos_v2.exe
+          retention-days: 30
